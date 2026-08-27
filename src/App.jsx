@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import NewBlog from './components/NewBlog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -27,6 +28,7 @@ const App = () => {
     try {
       const user = await loginService.login({username, password})
       window.localStorage.setItem('loginedUser', JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -80,6 +82,11 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
+      <NewBlog 
+        onBlogCreated = {createdBlog => {
+          setBlogs(blog => blog.concat(createdBlog))
+        }}
+      />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
