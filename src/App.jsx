@@ -61,9 +61,22 @@ const App = () => {
     setUser(null)
   }
 
-  const handleCreate = createdBlog => {
-    setBlogs(blog => blog.concat(createdBlog))
-    blogFormRef.current.toggleVisible()
+  const handleCreate = async newBlog => {
+    try {
+        const createdNewBlog = await blogService.create(newBlog)
+        setBlogs(blog => blog.concat(createdNewBlog))
+        blogFormRef.current.toggleVisible()
+
+        showNotification(
+            `a new blog ${createdNewBlog.title} by ${createdNewBlog.author} added`,
+            'success'
+        )
+    }catch(e) {
+        showNotification(
+            e.message,
+            'error'
+        )
+    }
   }
 
   if(!user) {
@@ -109,7 +122,7 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </p>
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <NewBlog onBlogCreated={handleCreate} showNotification={showNotification}/>
+        <NewBlog onBlogCreated={handleCreate}/>
       </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
