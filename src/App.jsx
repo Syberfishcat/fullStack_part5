@@ -28,7 +28,7 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loginedUser');
+    const loggedUserJSON = window.localStorage.getItem('loginedUser')
     if(loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON))
     }
@@ -48,7 +48,7 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       window.localStorage.setItem('loginedUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
@@ -69,19 +69,19 @@ const App = () => {
 
   const handleCreate = async newBlog => {
     try {
-        const createdNewBlog = await blogService.create(newBlog)
-        setBlogs(blog => blog.concat(createdNewBlog))
-        blogFormRef.current.toggleVisible()
+      const createdNewBlog = await blogService.create(newBlog)
+      setBlogs(blog => blog.concat(createdNewBlog))
+      blogFormRef.current.toggleVisible()
 
-        showNotification(
-            `a new blog ${createdNewBlog.title} by ${createdNewBlog.author} added`,
-            'success'
-        )
+      showNotification(
+        `a new blog ${createdNewBlog.title} by ${createdNewBlog.author} added`,
+        'success'
+      )
     }catch(e) {
-        showNotification(
-            e.message,
-            'error'
-        )
+      showNotification(
+        e.message,
+        'error'
+      )
     }
   }
 
@@ -93,16 +93,16 @@ const App = () => {
         user: blog.user.id
       })
 
-      setBlogs(currentBlogs => 
-        currentBlogs.map(item => 
+      setBlogs(currentBlogs =>
+        currentBlogs.map(item =>
           item.id === blog.id ? { ...item, ...updatedBlog } : item
         )
       )
     }catch(e) {
-        showNotification(
-            e.message,
-            'error'
-        )
+      showNotification(
+        e.message,
+        'error'
+      )
     }
   }
 
@@ -118,14 +118,14 @@ const App = () => {
     try{
       await blogService.deleteBlog(blog.id)
 
-      setBlogs(blogs => 
+      setBlogs(blogs =>
         blogs.filter(item => item.id !== blog.id)
       )
     }catch(e) {
-        showNotification(
-            e.message,
-            'error'
-        )
+      showNotification(
+        e.message,
+        'error'
+      )
     }
   }
 
@@ -141,7 +141,7 @@ const App = () => {
               <input
                 type='text'
                 value = {username}
-                onChange={({target}) => setUsername(target.value)}
+                onChange={({ target }) => setUsername(target.value)}
               />
             </label>
           </div>
@@ -151,7 +151,7 @@ const App = () => {
               <input
                 type='text'
                 value = {password}
-                onChange={({target}) => setPassword(target.value)}
+                onChange={({ target }) => setPassword(target.value)}
               />
             </label>
           </div>
