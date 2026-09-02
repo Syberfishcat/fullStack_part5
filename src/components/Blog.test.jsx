@@ -28,27 +28,53 @@ test('renders content', () => {
   expect(element).not.toBeVisible()
 })
 
-test('clicking the button ccalls event handler once', async () => {
-const blog =  {
-    title: 'Blog renders test',
-    author: 'yqs',
-    url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-    likes: 5,
-    user: {
-        username: 'tester',
-        name: 'testName'
-    }
-  }
+test('cliking the button change visibility', async () => {
+    const blog =  {
+        title: 'Blog renders test',
+        author: 'yqs',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        user: {
+            username: 'tester',
+            name: 'testName'
+        }
+      }
+    
+      render(<Blog blog={blog} />)
+    
+      const user = userEvent.setup()
+      const button = screen.getByText('view')
+      await user.click(button)
+    
+      let element = screen.getByText('https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf')
+      expect(element).toBeVisible()
+    
+      element = screen.getByText('like')
+      expect(element).toBeVisible()
+})
 
-  render(<Blog blog={blog} />)
+test('clicking the button calls event handler', async () => {
+    const blog =  {
+        title: 'Blog renders test',
+        author: 'yqs',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        user: {
+            username: 'tester',
+            name: 'testName'
+        }
+      }
 
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
+      const mockHandler = vi.fn()
+    
+      render(<Blog blog={blog} handleLike={mockHandler} />)
+    
+      const user = userEvent.setup()
+      let button = screen.getByText('view')
+      await user.click(button)
+      button = screen.getByText('like')
+      await user.click(button)
+      await user.click(button)
 
-  let element = screen.getByText('https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf')
-  expect(element).toBeVisible()
-
-  element = screen.getByText('like')
-  expect(element).toBeVisible()
+      expect(mockHandler.mock.calls).toHaveLength(2)
 })
