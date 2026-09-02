@@ -19,7 +19,7 @@ const NewBlog = ({ onBlogCreated }) => {
       <form onSubmit={handleCreate}>
         <div>
           <label>
-                        title:
+            title:
             <input
               type='text'
               value = {title}
@@ -29,7 +29,7 @@ const NewBlog = ({ onBlogCreated }) => {
         </div>
         <div>
           <label>
-                        author:
+            author:
             <input
               type='text'
               value = {author}
@@ -39,7 +39,7 @@ const NewBlog = ({ onBlogCreated }) => {
         </div>
         <div>
           <label>
-                        url:
+            url:
             <input
               type='text'
               value = {url}
