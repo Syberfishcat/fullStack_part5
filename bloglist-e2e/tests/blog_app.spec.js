@@ -47,5 +47,24 @@ describe('Blog app', () => {
   
       await expect(page.getByText('E2E testing with Playwright Test Author')).toBeVisible()
     })
+
+    describe('and a blog exists', () => {
+      beforeEach(async ({ page }) => {
+        await page.getByRole('button', { name: 'create new blog' }).click()
+        await page.getByLabel('title:').fill('Like me')
+        await page.getByLabel('author:').fill('Test Author')
+        await page.getByLabel('url:').fill('http://example.com')
+        await page.getByRole('button', { name: 'create', exact: true }).click()
+        await page.getByText('Like me Test Author').waitFor()
+      })
+
+      test('it can be liked', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click()
+        await expect(page.getByText('likes 0')).toBeVisible()
+
+        await page.getByRole('button', { name: 'like' }).click()
+        await expect(page.getByText('likes 1')).toBeVisible()
+      })
+    })
   })
 })
