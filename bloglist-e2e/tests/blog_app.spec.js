@@ -6,6 +6,9 @@ describe('Blog app', () => {
     await request.post('http://localhost:3003/api/users', {
       data: { name: 'Matti Luukkainen', username: 'mluukkai', password: 'salainen' }
     })
+    await request.post('http://localhost:3003/api/users', {
+      data: { name: 'Other User', username: 'other', password: 'secret' }
+    })
     await page.goto('http://localhost:5173')
   })
   
@@ -65,6 +68,24 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'like' }).click()
         await expect(page.getByText('likes 1')).toBeVisible()
       })
+
+      test('only the creator sees the remove button', async ({ page }) => {
+        // Creator can see the remove button
+        await page.getByRole('button', { name: 'view' }).click()
+        await expect(page.getByRole('button', { name: 'remove' })).toBeVisible()
+        
+        // Change user
+        await page.getByRole('button', { name: 'logout' }).click()
+        await page.getByLabel('username').fill('other')
+        await page.getByLabel('password').fill('secret')
+        await page.getByRole('button', { name: 'login' }).click()
+        await expect(page.getByText('Other User logged in')).toBeVisible()
+
+        // Other cannot see the remove button
+        await page.getByRole('button', { name: 'view' }).click()
+        await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
+      })
+
 
       test('it can be deleted by the user who added it', async ({ page }) => {
         await page.getByRole('button', { name: 'view' }).click()
