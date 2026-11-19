@@ -51,6 +51,31 @@ describe('Blog app', () => {
       await expect(page.getByText('E2E testing with Playwright Test Author')).toBeVisible()
     })
 
+    test('blogs are ordered by likes, most likes first', async ({ page, request }) => {
+      const response = await request.post('http://localhost:3003/api/login', {
+        data: { username: 'mluukkai', password: 'salainen' }
+      })
+      const { token } = await response.json()
+      const headers = { Authorization: `Bearer ${token}` }
+
+      const blogs = [
+        { title: 'few likes', author: 'A', url: 'http://a.com', likes: 1 },
+        { title: 'most likes', author: 'B', url: 'http://b.com', likes: 10 },
+        { title: 'some likes', author: 'C', url: 'http://c.com', likes: 5 },
+      ]
+      for (const blog of blogs) {
+        await request.post('http://localhost:3003/api/blogs', { data: blog, headers })
+      }
+
+      await page.reload()
+
+      const items = page.locator('.blog')
+      await expect(items).toHaveCount(3)
+      await expect(items.nth(0)).toContainText('most likes')
+      await expect(items.nth(1)).toContainText('some likes')
+      await expect(items.nth(2)).toContainText('few likes')
+    })
+
     describe('and a blog exists', () => {
       beforeEach(async ({ page }) => {
         await page.getByRole('button', { name: 'create new blog' }).click()
