@@ -2,79 +2,53 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-test('renders content', () => {
-  const blog =  {
-    title: 'Blog renders test',
-    author: 'yqs',
-    url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-    likes: 5,
-    user: {
-        username: 'tester',
-        name: 'testName'
-    }
+const blog = {
+  title: 'Blog renders test',
+  author: 'yqs',
+  url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+  likes: 5,
+  user: {
+    username: 'tester',
+    name: 'testName'
   }
+}
 
+test('unauthenticated user sees blog info and likes but no buttons', () => {
   render(<Blog blog={blog} />)
 
-  let element = screen.getByText(
-    'Blog renders test yqs'
-  )
-  expect(element).toBeVisible()
+  expect(screen.getByText('yqs: Blog renders test')).toBeVisible()
+  expect(screen.getByText(blog.url)).toBeVisible()
+  expect(screen.getByText(/likes 5/)).toBeVisible()
 
-  element = screen.getByText('https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf')
-  expect(element).not.toBeVisible()
-
-  element = screen.getByText('like')
-  expect(element).not.toBeVisible()
+  expect(screen.queryByRole('button', { name: 'like' })).toBeNull()
+  expect(screen.queryByRole('button', { name: 'remove' })).toBeNull()
 })
 
-test('cliking the button change visibility', async () => {
-    const blog =  {
-        title: 'Blog renders test',
-        author: 'yqs',
-        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-        likes: 5,
-        user: {
-            username: 'tester',
-            name: 'testName'
-        }
-      }
-    
-      render(<Blog blog={blog} />)
-    
-      const user = userEvent.setup()
-      const button = screen.getByText('view')
-      await user.click(button)
-    
-      let element = screen.getByText('https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf')
-      expect(element).toBeVisible()
-    
-      element = screen.getByText('like')
-      expect(element).toBeVisible()
+test('authenticated non-creator sees only the like button', () => {
+  const user = { username: 'other', name: 'Other User' }
+  render(<Blog blog={blog} user={user} />)
+
+  expect(screen.getByRole('button', { name: 'like' })).toBeVisible()
+  expect(screen.queryByRole('button', { name: 'remove' })).toBeNull()
 })
 
-test('clicking the button calls event handler', async () => {
-    const blog =  {
-        title: 'Blog renders test',
-        author: 'yqs',
-        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-        likes: 5,
-        user: {
-            username: 'tester',
-            name: 'testName'
-        }
-      }
+test('creator sees both like and remove buttons', () => {
+  const user = { username: 'tester', name: 'testName' }
+  render(<Blog blog={blog} user={user} />)
 
-      const mockHandler = vi.fn()
-    
-      render(<Blog blog={blog} handleLike={mockHandler} />)
-    
-      const user = userEvent.setup()
-      let button = screen.getByText('view')
-      await user.click(button)
-      button = screen.getByText('like')
-      await user.click(button)
-      await user.click(button)
+  expect(screen.getByRole('button', { name: 'like' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'remove' })).toBeVisible()
+})
 
-      expect(mockHandler.mock.calls).toHaveLength(2)
+test('clicking like twice calls event handler twice', async () => {
+  const user = { username: 'other', name: 'Other User' }
+  const mockHandler = vi.fn()
+  render(<Blog blog={blog} user={user} handleLike={mockHandler} />)
+
+  const clicker = userEvent.setup()
+  const button = screen.getByRole('button', { name: 'like' })
+  await clicker.click(button)
+  await clicker.click(button)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
 })
