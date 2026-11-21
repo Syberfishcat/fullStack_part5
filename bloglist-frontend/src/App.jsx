@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import NewBlog from './components/NewBlog'
@@ -7,6 +7,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Blog from './components/Blog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,8 +16,12 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
-
   const blogFormRef = useRef()
+
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(b => b.id === match.params.id)
+    : null
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -129,6 +134,7 @@ const App = () => {
       setBlogs(blogs =>
         blogs.filter(item => item.id !== blog.id)
       )
+      navigate('/')
     }catch(e) {
       showNotification(
         e.message,
@@ -158,8 +164,7 @@ const App = () => {
                 <NewBlog onBlogCreated={handleCreate} />
               </Togglable>
             )}
-            <BlogList blogs={blogs} user={user}
-              handleLike={handleLike} handleDelete={handleDelete} />
+            <BlogList blogs={blogs} />
           </>
         } />
         <Route path='/login' element={
@@ -168,6 +173,10 @@ const App = () => {
             setUsername={setUsername} setPassword={setPassword}
             handleLogin={handleLogin}
           />
+        } />
+        <Route path='/blogs/:id' element={
+          <Blog blog={blog} user={user}
+            handleLike={handleLike} handleDelete={handleDelete} />
         } />
       </Routes>
     </div>
