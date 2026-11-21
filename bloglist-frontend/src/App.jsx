@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Routes, Route, Link, useNavigate, useMatch, Navigate } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Blog from './components/Blog'
@@ -16,7 +15,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
-  const blogFormRef = useRef()
 
   const match = useMatch('/blogs/:id')
   const blog = match
@@ -84,7 +82,7 @@ const App = () => {
     try {
       const createdNewBlog = await blogService.create(newBlog)
       setBlogs(blog => blog.concat(createdNewBlog))
-      blogFormRef.current.toggleVisible()
+      navigate('/')
 
       showNotification(
         `a new blog ${createdNewBlog.title} by ${createdNewBlog.author} added`,
@@ -150,22 +148,19 @@ const App = () => {
       <div>
         <Link style={padding} to='/'>blogs</Link>
         {user
-          ? <button onClick={handleLogout}>logout</button>
+          ? <>
+            <Link style={padding} to='/create'>new blog</Link>
+            <button onClick={handleLogout}>logout</button>
+          </>
           : <Link style={padding} to='/login'>login</Link>}
       </div>
 
       <Notification notification={notification} />
 
       <Routes>
-        <Route path='/' element={
-          <>
-            {user && (
-              <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-                <NewBlog onBlogCreated={handleCreate} />
-              </Togglable>
-            )}
-            <BlogList blogs={blogs} />
-          </>
+        <Route path='/' element={<BlogList blogs={blogs} />} />
+        <Route path='/create' element={
+          user ? <NewBlog onBlogCreated={handleCreate} /> : <Navigate replace to='/login' />
         } />
         <Route path='/login' element={
           <LoginForm
