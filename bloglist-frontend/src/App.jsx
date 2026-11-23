@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Container } from '@mui/material'
+import { Container, AppBar, Toolbar, Typography, Button } from '@mui/material'
 import { Routes, Route, Link, useNavigate, useMatch, Navigate } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
@@ -142,19 +142,22 @@ const App = () => {
     }
   }
 
-  const padding = { padding: 5 }
-
   return (
     <Container>
-      <div>
-        <Link style={padding} to='/'>blogs</Link>
-        {user
-          ? <>
-            <Link style={padding} to='/create'>new blog</Link>
-            <button onClick={handleLogout}>logout</button>
-          </>
-          : <Link style={padding} to='/login'>login</Link>}
-      </div>
+      <AppBar position='static'>
+        <Toolbar>
+          <Typography variant='h6' sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button color='inherit' component={Link} to='/'>blogs</Button>
+          {user
+            ? <>
+              <Button color='inherit' component={Link} to='/create'>new blog</Button>
+              <Button color='inherit' onClick={handleLogout}>logout</Button>
+            </>
+            : <Button color='inherit' component={Link} to='/login'>login</Button>}
+        </Toolbar>
+      </AppBar>
 
       <Notification notification={notification} />
 
