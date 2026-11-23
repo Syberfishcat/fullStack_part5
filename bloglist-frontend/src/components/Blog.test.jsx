@@ -16,9 +16,10 @@ const blog = {
 test('unauthenticated user sees blog info and likes but no buttons', () => {
   render(<Blog blog={blog} />)
 
-  expect(screen.getByText('yqs: Blog renders test')).toBeVisible()
+  expect(screen.getByText('Blog renders test')).toBeVisible()
+  expect(screen.getByText('by yqs')).toBeVisible()
   expect(screen.getByText(blog.url)).toBeVisible()
-  expect(screen.getByText(/likes 5/)).toBeVisible()
+  expect(screen.getByText('5 likes')).toBeVisible()
 
   expect(screen.queryByRole('button', { name: 'like' })).toBeNull()
   expect(screen.queryByRole('button', { name: 'remove' })).toBeNull()

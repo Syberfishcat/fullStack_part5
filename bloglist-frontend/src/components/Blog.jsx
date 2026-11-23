@@ -1,3 +1,5 @@
+import { Card, CardContent, Typography, Button, Box } from '@mui/material'
+
 const Blog = ({ blog, user, handleLike, handleDelete }) => {
   if(!blog) {
     return null
@@ -6,18 +8,36 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
   const canDelete = user?.username === blog.user.username
 
   return (
-    <div>
-      <h2>{blog.author}: {blog.title}</h2>
-      <div>
-        <a href={blog.url} target='_blank' rel='noreferrer'>{blog.url}</a>
-      </div>
-      <div>
-        likes {blog.likes}
-        {user && <button onClick={() => handleLike(blog)}>like</button>}
-      </div>
-      <div>Added by {blog.user.name}</div>
-      {canDelete && <button onClick={() => handleDelete(blog)}>remove</button>}
-    </div>
+    <Card sx={{ mt: 2 }}>
+      <CardContent>
+        <Typography variant='h5' gutterBottom>
+          {blog.title}
+        </Typography>
+        <Typography color='text.secondary' gutterBottom>
+          by {blog.author}
+        </Typography>
+        <Typography gutterBottom>
+          <a href={blog.url} target='_blank' rel='noreferrer'>{blog.url}</a>
+        </Typography>
+        <Typography variant='body2' color='text.secondary' gutterBottom>
+          Added by {blog.user.name}
+        </Typography>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography>{blog.likes} likes</Typography>
+          {user && (
+            <Button variant='outlined' size='small' onClick={() => handleLike(blog)}>
+              like
+            </Button>
+          )}
+          {canDelete && (
+            <Button variant='outlined' size='small' color='error' onClick={() => handleDelete(blog)}>
+              remove
+            </Button>
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   )
 }
 
