@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Container } from '@mui/material'
 import { Routes, Route, Link, useNavigate, useMatch, Navigate } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
@@ -144,7 +145,7 @@ const App = () => {
   const padding = { padding: 5 }
 
   return (
-    <div>
+    <Container>
       <div>
         <Link style={padding} to='/'>blogs</Link>
         {user
@@ -174,7 +175,7 @@ const App = () => {
             handleLike={handleLike} handleDelete={handleDelete} />
         } />
       </Routes>
-    </div>
+    </Container>
   )
 }
 

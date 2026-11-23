@@ -8,13 +8,13 @@ test('<NewBlog /> calls onSubmit', async () => {
 
   render(<NewBlog onBlogCreated={onBlogCreated}/>)
 
-  let input = screen.getByLabelText('title:')
+  let input = screen.getByLabelText('title')
   await user.type(input, 'testing create a blog')
 
-  input = screen.getByLabelText('author:')
+  input = screen.getByLabelText('author')
   await user.type(input, 'yqs')
 
-  input = screen.getByLabelText('url:')
+  input = screen.getByLabelText('url')
   await user.type(input, 'www.example.com')
 
   const button = screen.getByText('create')
